@@ -9,7 +9,7 @@ const useStyles = makeStyles((theme) => ({
         display:"flex",
         alignItems:"center",
         justifyContent:"center",
-        color:"#ff2483",
+        color:"rgb(135, 194, 250)",
     }
   }));
 
@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
 
     return(
         <div className={classes.loader}>
-            <CircularProgress color="#ff2483" style={{width:"60px", height:"60px", color:"#ff2483"}}/>
+            <CircularProgress color="rgb(135, 194, 250)" style={{width:"60px", height:"60px", color:"rgb(135, 194, 250)"}}/>
         </div>
     )
   }

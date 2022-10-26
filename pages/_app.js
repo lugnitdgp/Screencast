@@ -1,4 +1,4 @@
-import '../style.css'
+import '../styles/globals.css'
 import React, {useState,useEffect} from 'react';
 import App from 'next/app';
 import Head from "next/head";
@@ -6,6 +6,7 @@ import Router from "next/router";
 import { ThemeProvider } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Loader from "../components/Loader.js"
+import theme from "../components/Theme";
 
 function MyApp(props) {
   const[loaded,setLoaded]=useState(false);
@@ -21,7 +22,7 @@ function MyApp(props) {
       setLoaded(false)
     );
     Router.events.on("routeChangeComplete", () =>
-      setLoaded(false)
+      setLoaded(true)
     );
   },[]);
 
@@ -39,10 +40,10 @@ function MyApp(props) {
             name="viewport"
             content="width=device-width, initial-scale=1.0"
           />
-          <title>Geektober</title>
+          <title>Screencast</title>
           <link rel="stylesheet" type="text/css" href="question.css" />
         </Head>
-        <ThemeProvider>
+        <ThemeProvider theme={theme}>
           <div className="back">
           <CssBaseline />
           {loaded ? (

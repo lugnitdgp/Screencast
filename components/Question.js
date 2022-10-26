@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import data from '../env.json';
+// import data from '../env.json';
 import AudioHint from "./AudioHint";
 import { Data } from "react-f/lib/src/form";
 import ResponsiveImage from './ImageHint'
+
 const useStyles = makeStyles({
   root: {
     minWidth: 275,
@@ -17,7 +18,9 @@ const useStyles = makeStyles({
     transform: "scale(0.8)",
   },
   title: {
-    fontSize: 21,
+    fontSize: 35,
+    color:"neon",
+    
   },
   pos: {
     marginBottom: 4,
@@ -40,28 +43,32 @@ export default function Question(props) {
   return (
     
     <div>
+      <div className="stick">
+      {/* <div className="arrow" style={{color:"black 0%",fontSize:"20px"}}><DrawerLeft level={props.level} userlevel={props.userlevel} loaded={props.loaded} isLoggedin={props.isLoggedin}/><DrawerRight/></div> */}
       <div className="head">
         <div
           className="container neon-box"
           style={{
             textAlign: "center",
-            fontSize: "29px",
+            fontSize: "32px",
             fontFamily: "'Russo One', sans-serif",
           }}
         >
-          <span className="flicker">ROUND {props.day}</span>
+          <span className="flicker">SCREENCAST</span>
         </div>
       </div>
-
-      <CardContent className="question">
-        <Typography
+      </div>
+      <div className="Nstick">
+      <Typography
           className={classes.title}
-          style={{ fontFamily: "'Montserrat', sans-serif",color:"#fff"}}
+          style={{ fontFamily: "'Montserrat', sans-serif",color:"#fff",fontSize:"20px"}}
           
           gutterBottom
         >
           Question {props.qsNo}
         </Typography>
+      <CardContent className="question">
+        
 
         {props.image ? (
           <ResponsiveImage
@@ -88,14 +95,14 @@ export default function Question(props) {
           <div style={{ textAlign: "center", margin: "0 auto" }}>
             <AudioHint
               style={{ textAlign: "center", margin: "0 auto" }}
-              audio={process.env.api + props.audio}
+              audio={process.env.api  + props.audio}
             />
           </div>
         ) : (
             <div></div>
           )}
       </CardContent>
+      </div>
     </div>
   );
 }
-

@@ -1,3 +1,5 @@
+
+
 import React, { useState, useEffect } from "react";
 import { withStyles, makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
@@ -7,17 +9,21 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Typography from "@material-ui/core/Typography";
 import axios from "axios";
-import data from '../env.json';
+// import data from '../env.json';
 import Avatar from "@material-ui/core/Avatar";
 import Loader from "./Loader";
 
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    backgroundColor: "#000044",
+    // backgroundColor: "rgba(1, 247, 247, 0.72)",
     color: "white",
     border: "none",
     fontFamily: "Russo One",
-    fontSize: 16
+    fontSize: 16,
+    background: "linear-gradient(112.76deg, rgba(255, 255, 255, 0.04) 7.77%, rgba(255, 255, 255, 0.01) 87.65%)",
+    backdropFilter: "blur(100px)",
+    boxShadow: "1px 1px 2px rgba(1, 247, 247, 0.72)",
+    
   },
   body: {
     fontFamily: "Russo One",
@@ -31,23 +37,26 @@ const StyledTableCell = withStyles((theme) => ({
 const StyledTableRow = withStyles((theme) => ({
   root: {
     "&:nth-of-type(1)": {
-      backgroundColor: "rgba(0,200,0,0.4) !important",
-      color: "#000 !important"
+       backgroundColor: "#1b0045 !important",
+      color: "#000 !important",
     },
     "&:nth-of-type(2)": {
-      backgroundColor: "rgba(0,200,0,0.4) !important",
+      backgroundColor: "#1b0045 !important",
       color: "#000 !important"
     },
     "&:nth-of-type(3)": {
-      backgroundColor: "rgba(0,200,0,0.4) !important",
+      backgroundColor: "#1b0045 !important",
       color: "#000 !important"
     },
     "&:nth-of-type(odd)": {
-      backgroundColor: "rgba(55,55,100,0.3)",
+      //backgroundColor: "#1b0045 !important",
+      background:"linear-gradient(112.76deg, rgba(255, 255, 255, 0.09) 7.77%, rgba(255, 255, 255, 0.1) 87.65%) !important",
       color: "#000 !important"
     },
     "&:nth-of-type(even)": {
-      backgroundColor: "rgba(0,0,0,0.7)",
+      //backgroundColor: "#1b0045 !important",
+
+      background:"linear-gradient(112.76deg, rgba(255, 255, 255, 0.09) 7.77%, rgba(255, 255, 255, 0.1) 87.65%) !important",
       color: "white !important",
     },
   },
@@ -57,6 +66,7 @@ const useStyles = makeStyles({
   table: {
     margin:"15px auto",
     maxWidth: "900px",
+    minWidth:"100px",
     width:"90%",
     overflowX: "hidden",
   },
@@ -68,16 +78,33 @@ export default function Leadertable() {
   const classes = useStyles();
 
   useEffect(() => {
-    axios
+    function getTimeline(){
+      axios
       .get(process.env.api + "/api/leaderboard")
       .then((response) => {
         setRankList(response.data);
+        
 
       })
-      .then(() => {
-        setloaded(true);
-      });
+      
+
+    }
+    // axios
+    //   .get(process.env.api + "/api/leaderboard")
+    //   .then((response) => {
+    //     setRankList(response.data);
+        
+
+    //   })
+    
+      getTimeline()
+      setloaded(true)
+      const interval= setInterval(()=> getTimeline(), 10000)
+      return () => {
+        clearInterval(interval);
+      }
   }, []);
+
 
   return (
     <div>

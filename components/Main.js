@@ -1,5 +1,4 @@
 
-
 import axios from "axios";
 import React from "react";
 import { useState, useEffect } from "react";
@@ -8,11 +7,14 @@ import Hint from "../components/Hint";
 import AnsAlert from "../components/AnsAlert";
 import Answer from "../components/Answer";
 import Router from "next/router";
-// import data from '../env.json';
 import Layout from "../components/Layout";
 import Loader from "../components/Loader";
+import Rules from "./Rules";
+import Timer2 from "../components/Timer2"
 
-export default function game() {
+var ApplicationUtil = require("../utils/logout");
+
+export default function game(props) {
   
     
       const [answer,setAnswer]= useState(""),
@@ -20,14 +22,13 @@ export default function game() {
       [qsNo,setQsNo]=useState(1),
       [audio,setAudio]=useState(""),
       [image,setImage]=useState(""),
-      [isLoggedIn,setIsLoggedIn]=useState (false),
       [hint,setHint]=useState(""),
       [day,setDay]=useState(""),
       [end,setEnd]=useState(""),
-      [message,setMessage]=useState(""),
-      [v,setV]=useState(""),
       [loaded,setLoaded]=useState(false)
-    
+      const [quizStarted,setQuizStarted]=useState(true);
+      const [startdate,setStartDate]=useState();
+      
 
       useEffect (() => {
       axios
@@ -37,31 +38,23 @@ export default function game() {
         let temp2 = new Date(response.data.end_time);
         localStorage.setItem('end', temp2.getTime() + (temp2.getTimezoneOffset() * 60000))
         localStorage.setItem("start", temp3.getTime() + (temp3.getTimezoneOffset() * 60000));
-        let temp = localStorage.getItem('end') - Date.now();
         localStorage.setItem("day", response.data.current_day);
-
-
-         setDay(localStorage.getItem('day')) 
-         setEnd(localStorage.getItem('end'))
-          if (localStorage.getItem('day') == 3 && (localStorage.getItem('end') < Date.now())){
-            console.log("finale");
-            Router.push('/finale')
-          }
+        setStartDate(temp3.getTime() + (temp3.getTimezoneOffset() * 60000));
+        setDay(localStorage.getItem('day')) 
+        setEnd(localStorage.getItem('end'))
             
-          if (!(localStorage.getItem("email"))) {
-            console.log("9");
-            AnsAlert(8)
+        if (localStorage.getItem("token") == null) {
+            console.log("Unauthorized user _ MAIN");
             Router.push('/');
-          }
-          else if (!(localStorage.getItem('start') <= Date.now())) {
+        }
+        else if (localStorage.getItem('start') >= Date.now()) {
             console.log("8");
-            // AnsAlert(8)
-            Router.push("/");
-          }
-          else {
+            setQuizStarted(false);
+            setLoaded(true);
+        }
+        else if (quizStarted){
             getQuestions();
           }
-        
         })
       .catch(err => {
         console.log(err)
@@ -79,11 +72,12 @@ export default function game() {
       })
       .then((response) => {
         if (response.data.quiz_finished) {
-          clearTimeout(v);
-          Router.push("/finale");
+          clearTimeout();
+          
+          // Router.push("/dashboard");
         }
         
-            setQuestions(response.data.questions);
+            setQuestions(response.data.question);
             setHint(response.data.hint);
             setQsNo(response.data.question_no);
             setAudio(response.data.audio);
@@ -98,6 +92,7 @@ export default function game() {
       })
       .catch(err => {
         console.log(err)
+        ApplicationUtil.ApplicationLogout();
         Router.push('/error')
       })
     
@@ -109,6 +104,7 @@ export default function game() {
     checkAns(answer);
     setAnswer("")
   };
+
 
   const change = (event) => {
     //keep updating answer
@@ -135,15 +131,20 @@ export default function game() {
           AnsAlert(1);
           setAnswer("");
           getQuestions();
+          props.handleLevel();
         } 
         else if (r && response.data.quiz_finished) {
           AnsAlert(1);
-          clearTimeout(v);
-          Router.push("/finale");
+          clearTimeout();
+          Router.push("/dashboard");
         } else {
           setAnswer("");
           AnsAlert(0);
         }
+      })
+      .catch((error) => {
+        console.log("error");
+        ApplicationUtil.ApplicationLogout();
       });
   };
 
@@ -154,10 +155,11 @@ export default function game() {
         { (loaded === true) ?
           <Layout>
             <div
-              style={{ marginRight: "auto", marginLeft: "auto", textAlign: "center", minHeight: "100vh-100px" }}
+              style={{ marginRight: "auto", marginLeft: "auto", textAlign: "center", minHeight: "100vh-100px",marginBottom:"10px" }}
               questions
             >
-              <Question qs={questions} qsNo={qsNo} audio={audio} image={image} day={day} />
+              {quizStarted ? (<>
+              <Question qs={questions} qsNo={qsNo} audio={audio} image={image} day={day} level={props.level} userlevel={props.userlevel} loaded={props.loaded}handleLevel={props.handleLevel} isLoggedin={props.isLoggedin}/>
               <div>
                 <Answer
                   change={change}
@@ -166,18 +168,42 @@ export default function game() {
                 />
                 <Hint hint={hint}
                   submit={submit}
+                // submit2={this.submit2}
                 />
-               {/*} <style jsx>{`
-            div {
-              text-align: center;
-              margin: 5px;
-              margin-bottom:100px;
-            }
-          `}</style>*/}
-              </div>
+          <div className="Ruleb">
+          <Rules>Rules</Rules>
+          </div>
+          </div></>):(<div style={{color:"white"}}><Timer2 completed={false} start={startdate}/></div>)}
+              {/* <div className='footerBuff'>
+
+              </div> */}
             </div>
+            <div style={{display:"inline-flex", justifyContent:"normal",position:"relative"}}>
+            {/* {Log && (
+          <div className="userDetails-wrapper">
+            <div className="details-wrapper">
+              <GoogleLogout
+                render={(renderProps) => (
+                  <div>
+                    <Link href="/">
+                      <MenuItem onClick={logout}><Typography style={{ color: '#FFFFFF', fontFamily:"'Russo One', sans-serif", fontSize:18 }}>Logout</Typography></MenuItem>
+                    </Link>
+                  </div>
+                )}
+                onLogoutSuccess={logout}
+              />
+            </div>
+            
+          
+          </div>
+        ) } */}
+        {/* <Rules>Rules</Rules> */}
+        </div>
+                  
           </Layout>
-          : <Loader />}
+          : <Loader />
+          }
+          
       </>
     )
           
